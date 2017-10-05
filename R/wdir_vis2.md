@@ -117,7 +117,7 @@ plot(depth ~ datetimestamp, dat = dat_bh,
      type = "l",
      col = bluepal[8],
      lwd = 2,
-     ylim = c(1, 2),
+     ylim = c(0.55, 2),
      main = "Water",
      ylab = "depth (m) at Bayou Heron",
      xlab = "date / time")
@@ -151,7 +151,7 @@ b <- plot(wspd~datetimestamp, data=dat_4hourly,
      lwd=2,
      col=bluepal[6],
      main = 'Wind',
-     ylab = 'wind speed / direction',
+     ylab = 'wind speed (m/s) / direction',
      xlab = 'date / time')
 b + Arrowhead(x0=dat_4hourly$datetimestamp,
           y0=dat_4hourly$wspd,
@@ -173,7 +173,7 @@ plot(depth ~ datetimestamp, dat = dat_bh,
      type = "l",
      col = bluepal[8],
      lwd = 2,
-     ylim = c(1, 2),
+     ylim = c(0.55, 2),
      main = "Water",
      ylab = "depth (m) at Bayou Heron",
      xlab = "date / time")
@@ -181,4 +181,60 @@ plot(depth ~ datetimestamp, dat = dat_bh,
 
 ![](wdir_vis2_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
+
+### Part 3: Adding other parameters that might be cool
+
+
+```r
+par(mfrow = c(4, 1), mar = c(3,4,2,1))
+
+a <- plot(wspd~datetimestamp, data=dat_hourly, 
+     type="n", 
+     ylim = c(-7, 7),
+     yaxt = 'n',
+     main = 'Wind',
+     ylab = 'wind speed / direction',
+     xlab = 'date / time')
+a + Arrowhead(x0=dat_hourly$datetimestamp, y0=0, 
+          angle=dat_hourly$wdir, 
+          arr.type="triangle", 
+          arr.length=dat_hourly$wspd/5, 
+          arr.adj=0, 
+          arr.width=0.15, 
+          arr.lwd = 1.5,
+          arr.col=bluepal[6])
+```
+
+```
+## numeric(0)
+```
+
+```r
+plot(depth ~ datetimestamp, dat = dat_bh,
+     type = "l",
+     col = bluepal[8],
+     lwd = 2,
+     ylim = c(0.55, 2),
+     main = "Water - depth",
+     ylab = "depth (m) at Bayou Heron",
+     xlab = "date / time")
+
+plot(sal ~ datetimestamp, dat = dat_bh,
+     type = "l",
+     col = bluepal[6],
+     lwd = 2,
+     main = "Water - salinity",
+     ylab = "salinity (psu) at Bayou Heron",
+     xlab = "date / time")
+
+plot(do_pct ~ datetimestamp, dat = dat_bh,
+     type = "l",
+     col = bluepal[5],
+     lwd = 2,
+     main = "Water - Dissolved Oxygen",
+     ylab = "DO (% saturation) at Bayou Heron",
+     xlab = "date / time")
+```
+
+![](wdir_vis2_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
 
