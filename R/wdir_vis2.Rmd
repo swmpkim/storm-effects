@@ -1,0 +1,142 @@
+---
+title: "Visualizations of wind direction"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message=FALSE, warning=FALSE, fig.width = 8, fig.height = 11}
+# trying to imitate weather underground's wind forecast graphs, where there's a line for wind speed and every hour or two there's an arrowhead pointing in the direction of the wind
+
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+library(shape)
+library(RColorBrewer)
+
+# setwd("C:/Users/kimberly.cressman/Desktop/Main Docs/data visualization/wind direction/oct2017")
+
+dat_all <- read.csv("GNDCRMET.csv", stringsAsFactors=FALSE) 
+names(dat_all) <- tolower(names(dat_all))
+dat_all <- mutate(dat_all, datetimestamp = mdy_hm(datetimestamp), wdir_or = wdir, wdir = ifelse(wdir_or <= 270, 270 - wdir_or, 630 - wdir_or))
+
+dat_bh <- read.csv("GNDBHWQ.csv", stringsAsFactors=FALSE) 
+names(dat_bh) <- tolower(names(dat_bh))
+dat_bh <- mutate(dat_bh, datetimestamp = mdy_hm(datetimestamp))
+```
+
+### Wind and water the week of 9/27 - 10/3 2017. 
+
+
+Water is really being pushed in by winds out of the east. Here are some graphs to illustrate.
+
+
+```{r}
+########################
+
+# trim it to only look at a specific time interval
+dat <- dat_all 
+
+# pull out hourly values - this is okay for a few days to a couple weeks
+dat_hourly <- filter(dat, grepl(":00:00",datetimestamp))
+
+### OR every 6 hours - for longer time series, like a month or more
+dat_6hourly <- filter(dat, grepl("00:00:00|06:00:00|12:00:00|18:00:00",datetimestamp))
+
+### OR every 4 hours - might be better for just a few days
+dat_4hourly <- filter(dat, grepl("00:00:00|04:00:00|08:00:00|12:00:00|16:00:00|20:00:00",datetimestamp))
+
+### some palettes to play with from RColorBrewer
+rainbowlist <- brewer.pal(9, "Set1")
+bluepal <- brewer.pal(9, "Blues")
+
+# make a blank plot window, then add arrowheads in the direction of wind. Length of arrowheads is related to wind speed at a given time.
+
+# hourly
+plot(wspd~datetimestamp, data=dat_hourly, 
+     type="n", 
+     lwd=1, 
+     col="red3", 
+     ylim = c(-10, 10),
+     yaxt = 'n',
+     ylab = 'wind speed / direction',
+     xlab = 'date / time')
+Arrowhead(x0=dat_hourly$datetimestamp, y0=0, 
+          angle=dat_hourly$wdir, 
+          arr.type="triangle", 
+          arr.length=dat_hourly$wspd/5, 
+          arr.adj=0, 
+          arr.width=0.15, 
+          arr.lwd = 1.5,
+          arr.col='cadetblue3')
+
+###
+# put two graphs on top of each other
+
+par(mfrow = c(2, 1), mar = c(3,4,1,1))
+a <- plot(wspd~datetimestamp, data=dat_hourly, 
+     type="n", 
+     ylim = c(-10, 10),
+     yaxt = 'n',
+     main = 'Wind',
+     ylab = 'wind speed / direction',
+     xlab = 'date / time')
+a + Arrowhead(x0=dat_hourly$datetimestamp, y0=0, 
+          angle=dat_hourly$wdir, 
+          arr.type="triangle", 
+          arr.length=dat_hourly$wspd/5, 
+          arr.adj=0, 
+          arr.width=0.15, 
+          arr.lwd = 1.5,
+          arr.col=bluepal[7])
+
+plot(depth ~ datetimestamp, dat = dat_bh,
+     type = "l",
+     col = bluepal[9],
+     lwd = 2,
+     ylim = c(1, 2),
+     main = "Water",
+     ylab = "depth (m) at Bayou Heron",
+     xlab = "date / time")
+
+
+#####
+# the attempt at the wunderground graph looked something like this:
+# (not quite working, but that's okay for now)
+# making a line graph for hourly wind speed, and wind direction overlaid every 6 hours
+
+### wunderground wannabe
+
+# all every 4 hours
+b <- plot(wspd~datetimestamp, data=dat_4hourly,
+     type="l",
+     lwd=1.5,
+     col=bluepal[8],
+     main = 'Wind',
+     ylab = 'wind speed / direction',
+     xlab = 'date / time')
+b + Arrowhead(x0=dat_4hourly$datetimestamp,
+          y0=dat_4hourly$wspd,
+          angle=dat_4hourly$wdir,
+          arr.type="triangle",
+          arr.width=0.2,
+          arr.length=0.3,
+          arr.lwd = 0.5,
+          arr.col=bluepal[9],
+          lcol = bluepal[1])
+
+plot(depth ~ datetimestamp, dat = dat_bh,
+     type = "l",
+     col = bluepal[7],
+     lwd = 2,
+     ylim = c(1, 2),
+     main = "Water",
+     ylab = "depth (m) at Bayou Heron",
+     xlab = "date / time")
+
+```
+
+
