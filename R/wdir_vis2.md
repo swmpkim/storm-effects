@@ -1,19 +1,7 @@
----
-title: "Visualizations of wind direction"
-date: "`r Sys.Date()`"
-output: 
-    html_document:
-        keep_md: true
-        code_folding: 'hide'
-        fig_width: 8
-        fig_height: 7
----
+# Visualizations of wind direction
+`r Sys.Date()`  
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_chunk$set(message = FALSE)
-knitr::opts_chunk$set(warning = FALSE)
-```
+
 
 
 ### Load packages  
@@ -26,7 +14,8 @@ Using the following packages in this script:
 +  `RColorBrewer` - for color palettes that go together  
 
 
-```{r}
+
+```r
 # trying to imitate weather underground's wind forecast graphs, where there's a line for wind speed and every hour or two there's an arrowhead pointing in the direction of the wind
 
 library(dplyr)
@@ -51,7 +40,8 @@ Some notes on the wind direction data:
 +  for our purposes, I ran the numbers; turned the original wind direction into a column called `wdir_or` (for "original"); and used the name `wdir` for the calculated values to go into the graphs.  
 +  __the arrows point in the direction that wind was moving.__
 
-```{r}
+
+```r
 dat_all <- read.csv("GNDCRMET.csv", stringsAsFactors=FALSE) 
 names(dat_all) <- tolower(names(dat_all))
 dat_all <- mutate(dat_all, datetimestamp = mdy_hm(datetimestamp), wdir_or = wdir, wdir = ifelse(wdir_or <= 270, 270 - wdir_or, 630 - wdir_or))
@@ -93,8 +83,8 @@ I never did find a good way to make feather plots in R - I was able to make some
 I wanted to stack a wind graph on top of a graph of water depth. Because `shape` only interacts with base graphics, I had to use that and stack them manually with `par(mfrow)` etc.
 
 
-```{r}
 
+```r
 ###
 # put two graphs on top of each other
 
@@ -115,7 +105,13 @@ a + Arrowhead(x0=dat_hourly$datetimestamp, y0=0,
           arr.width=0.15, 
           arr.lwd = 1.5,
           arr.col=bluepal[6])
+```
 
+```
+## numeric(0)
+```
+
+```r
 plot(depth ~ datetimestamp, dat = dat_bh,
      type = "l",
      col = bluepal[8],
@@ -126,6 +122,8 @@ plot(depth ~ datetimestamp, dat = dat_bh,
      xlab = "date / time")
 ```
 
+![](wdir_vis2_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
 
 ### Part 2: Imitating the wind forecast graph from weatherunderground.com  
 
@@ -135,7 +133,8 @@ Something Shannon suggested (thanks, Shannon!) during my struggles to imitate fe
 I've played around a bit with the line showing higher-frequency wind speed data and the arrows only showing up every few hours, but to me it looks best if the line and arrows are generated from the same time scale. YMMV; play around if you want to. These data frames were generated in the data manipulation code chunk above.
 
 
-```{r}
+
+```r
 #####
 # the attempt at the wunderground graph looked something like this:
 # (not quite working, but that's okay for now)
@@ -162,7 +161,13 @@ b + Arrowhead(x0=dat_4hourly$datetimestamp,
           arr.lwd = 0.2,
           arr.col=bluepal[8],
           lcol = bluepal[2])
+```
 
+```
+## numeric(0)
+```
+
+```r
 plot(depth ~ datetimestamp, dat = dat_bh,
      type = "l",
      col = bluepal[8],
@@ -171,7 +176,8 @@ plot(depth ~ datetimestamp, dat = dat_bh,
      main = "Water",
      ylab = "depth (m) at Bayou Heron",
      xlab = "date / time")
-
 ```
+
+![](wdir_vis2_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
 
