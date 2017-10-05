@@ -6,7 +6,8 @@
 
 ### Load packages  
 
-Using the following packages in this script:  
+Using the following packages in this script: 
+
 +  `dplyr` - for data tidying and manipulation  
 +  `lubridate` - for help with dates  
 +  `ggplot2` - probably not actually necessary in this script, but I love it  
