@@ -227,18 +227,10 @@ axis.POSIXct(1, at=seq(min(dat_hourly$datetimestamp, na.rm=TRUE),
 
 ### Shareable graphs  
 
-Everything before 9/26 has been cut from the next graphs to focus on data from Nate specifically. Bangs Lake data has been added in for comparison. Bayou Cumbest could be added in, but depth is almost exactly the same as Bangs Lake, and I didn't bother after seeing that.
+The following graphs are the same as "Nate_vis" except that I did NOT discard data before 9/26, so Irma is also visible.
 
 
 ```{r}
-dat_all <- dat_all %>%
-    filter(datetimestamp >= "2017-09-26 00:00")
-
-dat_bh <- dat_bh %>%
-    filter(datetimestamp >= "2017-09-26 00:00")
-
-dat_bl <- dat_bl %>%
-    filter(datetimestamp >= "2017-09-26 00:00")
 
 dat_storm <- dat_all %>%
     filter(datetimestamp >= "2017-10-07 0:00",
@@ -246,18 +238,6 @@ dat_storm <- dat_all %>%
 
 dat <- dat_all 
 
-# pull out hourly values - this is okay for a few days to a couple weeks
-dat_hourly <- filter(dat, grepl(":00:00",datetimestamp))
-
-### OR every 6 hours - for longer time series, like a month or more
-dat_6hourly <- filter(dat, grepl("00:00:00|06:00:00|12:00:00|18:00:00",datetimestamp))
-
-### OR every 4 hours - might be better for just a few days
-dat_4hourly <- filter(dat, grepl("00:00:00|04:00:00|08:00:00|12:00:00|16:00:00|20:00:00",datetimestamp))
-
-dat_2hourly <- filter(dat, grepl("00:00:00|02:00:00|04:00:00|06:00:00|08:00:00|10:00:00|12:00:00|14:00:00|16:00:00|18:00:00|20:00:00|22:00:00",datetimestamp))
-
-    
 
 ```
 
@@ -403,9 +383,7 @@ barplot(dat_rain$rain_in, col = bluepal[6],
         names.arg = dat_rain$caldate,
         main = "Rain",
         ylab = "total daily rainfall (in)",
-        xlab = "date",
-        # xaxt = "n",
-        ylim = c(0, 3))
+        xlab = "date")
 
 plot(ph ~ datetimestamp, dat = dat_bh,
      type = "l",

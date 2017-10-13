@@ -1,19 +1,7 @@
----
-title: "Visualizations of Hurricane Nate"
-date: "`r Sys.Date()`"
-output: 
-    html_document:
-        keep_md: true
-        code_folding: 'hide'
-        fig_width: 10
-        fig_height: 7
----
+# Visualizations of Hurricane Nate
+`r Sys.Date()`  
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_chunk$set(message = FALSE)
-knitr::opts_chunk$set(warning = FALSE)
-```
+
 
 
 ### Load packages  
@@ -27,7 +15,8 @@ Using the following packages in this script:
 +  `RColorBrewer` - for color palettes that go together  
 
 
-```{r}
+
+```r
 # trying to imitate weather underground's wind forecast graphs, where there's a line for wind speed and every hour or two there's an arrowhead pointing in the direction of the wind
 
 library(dplyr)
@@ -54,7 +43,8 @@ Some notes on the wind direction data:
 
 
 
-```{r}
+
+```r
 dat_all <- read.csv("GNDCRMET.csv", stringsAsFactors=FALSE) 
 names(dat_all) <- tolower(names(dat_all))
 dat_all <- dat_all %>%
@@ -119,8 +109,8 @@ __In this graph, lines/triangles point in the direction the wind is moving. The 
 This is a great way to see Irma pushing the water out (around 9/11), Nate pushing water in (10/7-10/8), and how wind changes might have affected water levels.
 
 
-```{r}
 
+```r
 ###
 # put two graphs on top of each other
 
@@ -146,7 +136,13 @@ a + Arrowhead(x0=dat_hourly$datetimestamp, y0=0,
           arr.width=0.15, 
           arr.lwd = 1.5,
           arr.col=bluepal[6])
+```
 
+```
+## numeric(0)
+```
+
+```r
 plot(depth ~ datetimestamp, dat = dat_bh,
      type = "l",
      col = bluepal[8],
@@ -166,6 +162,8 @@ axis.POSIXct(1, at=seq(min(dat_bh$datetimestamp, na.rm=TRUE),
 legend(x = "topleft", legend = c("Bayou Heron", "Bangs Lake"), col = c(bluepal[8], bluepal[5]), lwd=2)
 ```
 
+![](Irma_Nate_vis_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
 
 ### Part 2: Imitating the wind forecast graph from weatherunderground.com  
 
@@ -175,7 +173,8 @@ This is similar, but more like the forecast graphs on wunderground - it includes
 I've played around a bit with the line showing higher-frequency wind speed data and the arrows only showing up every few hours, but to me it looks best if the line and arrows are generated from the same time scale. YMMV; play around if you want to. These data frames were generated in the data manipulation code chunk above.
 
 
-```{r}
+
+```r
 #####
 ### wunderground wannabe
 
@@ -203,7 +202,13 @@ b + Arrowhead(x0=dat_hourly$datetimestamp,
           arr.lwd = 0.1,
           arr.col=bluepal[8],
           lcol = bluepal[2])
+```
 
+```
+## numeric(0)
+```
+
+```r
 plot(depth ~ datetimestamp, dat = dat_bh,
      type = "l",
      col = bluepal[8],
@@ -217,8 +222,9 @@ axis.POSIXct(1, at=seq(min(dat_hourly$datetimestamp, na.rm=TRUE),
                        max(dat_hourly$datetimestamp, na.rm=TRUE),
                        length.out=8), 
              format="%m/%d", cex.axis=0.9)
-
 ```
+
+![](Irma_Nate_vis_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
 
 ***
@@ -227,38 +233,16 @@ axis.POSIXct(1, at=seq(min(dat_hourly$datetimestamp, na.rm=TRUE),
 
 ### Shareable graphs  
 
-Everything before 9/26 has been cut from the next graphs to focus on data from Nate specifically. Bangs Lake data has been added in for comparison. Bayou Cumbest could be added in, but depth is almost exactly the same as Bangs Lake, and I didn't bother after seeing that.
+The following graphs are the same as "Nate_vis" except that I did NOT discard data before 9/26, so Irma is also visible.
 
 
-```{r}
-dat_all <- dat_all %>%
-    filter(datetimestamp >= "2017-09-26 00:00")
 
-dat_bh <- dat_bh %>%
-    filter(datetimestamp >= "2017-09-26 00:00")
-
-dat_bl <- dat_bl %>%
-    filter(datetimestamp >= "2017-09-26 00:00")
-
+```r
 dat_storm <- dat_all %>%
     filter(datetimestamp >= "2017-10-07 0:00",
            datetimestamp <= "2017-10-09 0:00")
 
 dat <- dat_all 
-
-# pull out hourly values - this is okay for a few days to a couple weeks
-dat_hourly <- filter(dat, grepl(":00:00",datetimestamp))
-
-### OR every 6 hours - for longer time series, like a month or more
-dat_6hourly <- filter(dat, grepl("00:00:00|06:00:00|12:00:00|18:00:00",datetimestamp))
-
-### OR every 4 hours - might be better for just a few days
-dat_4hourly <- filter(dat, grepl("00:00:00|04:00:00|08:00:00|12:00:00|16:00:00|20:00:00",datetimestamp))
-
-dat_2hourly <- filter(dat, grepl("00:00:00|02:00:00|04:00:00|06:00:00|08:00:00|10:00:00|12:00:00|14:00:00|16:00:00|18:00:00|20:00:00|22:00:00",datetimestamp))
-
-    
-
 ```
 
 
@@ -268,13 +252,14 @@ We had high winds and high water last week, which is why I've gone back a little
 
 Some stats from the storm:  
 
-*  Maximum 15-minute-averaged wind speed was __`r round(max(dat_all$wspd_mph), 1)` mph__  
-*  Maximum wind gust was __`r round(max(dat_all$maxwspd_mph), 1)` mph__  
-*  Minimum barometric pressure was __`r round(min(dat_all$bp), 1)` mb (`r round(0.0295301 * min(dat_all$bp), 2)` in)__
-*  Maximum depth at the Bayou Heron water quality station (High tides in September 2017 were around 5 ft (4.8-5.6)) was __`r round(max(dat_bh$depth_ft, na.rm=TRUE),1)` ft__  
-*  Amount of precipitation received on October 7-8 was __`r round(sum(dat_storm$totprcp_in), 1)` in__
+*  Maximum 15-minute-averaged wind speed was __44.1 mph__  
+*  Maximum wind gust was __58.6 mph__  
+*  Minimum barometric pressure was __995 mb (29.38 in)__
+*  Maximum depth at the Bayou Heron water quality station (High tides in September 2017 were around 5 ft (4.8-5.6)) was __9.8 ft__  
+*  Amount of precipitation received on October 7-8 was __2.3 in__
 
-```{r, fig.width = 8, fig.height = 14}
+
+```r
 ###########################
 ###########################
 
@@ -338,7 +323,13 @@ b + Arrowhead(x0=dat_hourly$datetimestamp,
           arr.lwd = 0.1,
           arr.col=bluepal[8],
           lcol = bluepal[3])
+```
 
+```
+## numeric(0)
+```
+
+```r
 plot(depth_ft ~ datetimestamp, dat = dat_bh,
      type = "l",
      col = bluepal[8],
@@ -374,9 +365,12 @@ axis.POSIXct(1, at=seq(min(dat_bh$datetimestamp, na.rm=TRUE),
                        length.out=8), 
              format="%m/%d", cex.axis=0.9)
 legend(x = "bottomleft", legend = c("Bayou Heron", "Bangs Lake"), col = c(bluepal[8], bluepal[5]), lwd=2)
+```
 
+![](Irma_Nate_vis_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+
+```r
 # dev.off()
-
 ```
 
 ***
@@ -386,7 +380,8 @@ Probably ought to look at all the water quality parameters. And precip.
 ***
 
 
-```{r, fig.width = 8, fig.height = 14}
+
+```r
 ###########################
 ###########################
 
@@ -403,9 +398,7 @@ barplot(dat_rain$rain_in, col = bluepal[6],
         names.arg = dat_rain$caldate,
         main = "Rain",
         ylab = "total daily rainfall (in)",
-        xlab = "date",
-        # xaxt = "n",
-        ylim = c(0, 3))
+        xlab = "date")
 
 plot(ph ~ datetimestamp, dat = dat_bh,
      type = "l",
@@ -463,6 +456,7 @@ axis.POSIXct(1, at=seq(min(dat_bh$datetimestamp, na.rm=TRUE),
                        length.out=8), 
              format="%m/%d", cex.axis=0.9)
 legend(x = "topleft", legend = c("Bayou Heron", "Bangs Lake"), col = c(bluepal[8], bluepal[5]), lwd=2)
-
 ```
+
+![](Irma_Nate_vis_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
